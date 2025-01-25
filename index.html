@@ -3,40 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spotify Music Explorer</title>
+    <title>Regional Music Player</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>Spotify Music Explorer</h1>
+        <h1 id="title">Regional Music Player</h1>
 
-        <!-- Genre Selection -->
-        <label for="select_genre">Select Genre</label>
-        <select id="select_genre">
-            <option value="">Select Genre</option>
-        </select>
+        <div class="language-selection">
+            <label for="language">Select Language:</label>
+            <select id="language" onchange="changeLanguage()">
+                <option value="en">English</option>
+                <option value="hi">हिंदी</option>
+                <option value="te">తెలుగు</option>
+            </select>
+        </div>
 
-        <!-- Playlist Selection -->
-        <label for="select_playlist">Select Playlist</label>
-        <select id="select_playlist">
-            <option value="">Select Playlist</option>
-        </select>
-
-        <!-- Submit Button -->
-        <button id="btn_submit">Get Tracks</button>
-
-        <!-- Song List -->
-        <h2>Song List</h2>
-        <div class="song-list"></div>
-
-        <!-- Song Detail -->
-        <h2>Song Detail</h2>
-        <div id="song-detail"></div>
-
-        <!-- Hidden Token Storage -->
-        <input type="hidden" id="hidden_token">
+        <div class="recommendations">
+            <h2 id="recommendationsTitle">Recommended Songs:</h2>
+            <ul id="songList">
+                <!-- Recommendations will be dynamically listed here -->
+            </ul>
+        </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
