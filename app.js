@@ -1,90 +1,112 @@
 // app.js
 
-// Song data with language tags
+// Sample dynamic data for music genres
 const songsData = {
-    "en": [
+    "rock": [
         {
-            name: "Shape of You",
-            artist: "Ed Sheeran",
-            url: "https://www.youtube.com/watch?v=JGwWNGJdvx8",
-            cover: "https://i.ytimg.com/vi/JGwWNGJdvx8/hqdefault.jpg",
-            language: "English",
-            timePeriod: "2010s"
+            name: "Bohemian Rhapsody",
+            artist: "Queen",
+            url: "https://www.youtube.com/watch?v=fJ9rUzIMcZQ",
+            cover: "https://i.ytimg.com/vi/fJ9rUzIMcZQ/hqdefault.jpg"
         },
+        {
+            name: "Smells Like Teen Spirit",
+            artist: "Nirvana",
+            url: "https://www.youtube.com/watch?v=hTWK2jv3ZSU",
+            cover: "https://i.ytimg.com/vi/hTWK2jv3ZSU/hqdefault.jpg"
+        }
+    ],
+    "pop": [
         {
             name: "Blinding Lights",
             artist: "The Weeknd",
             url: "https://www.youtube.com/watch?v=4NRXx6U8ABQ",
-            cover: "https://i.ytimg.com/vi/4NRXx6U8ABQ/hqdefault.jpg",
-            language: "English",
-            timePeriod: "2020s"
-        }
-    ],
-    "hi": [
-        {
-            name: "Tum Hi Ho",
-            artist: "Arijit Singh",
-            url: "https://www.youtube.com/watch?v=Um6N6p5oWb8",
-            cover: "https://i.ytimg.com/vi/Um6N6p5oWb8/hqdefault.jpg",
-            language: "Hindi",
-            timePeriod: "2010s"
+            cover: "https://i.ytimg.com/vi/4NRXx6U8ABQ/hqdefault.jpg"
         },
         {
-            name: "Tum Jo Aaye",
-            artist: "Rahat Fateh Ali Khan",
-            url: "https://www.youtube.com/watch?v=lDtpSvjN-mI",
-            cover: "https://i.ytimg.com/vi/lDtpSvjN-mI/hqdefault.jpg",
-            language: "Hindi",
-            timePeriod: "2000s"
+            name: "Shape of You",
+            artist: "Ed Sheeran",
+            url: "https://www.youtube.com/watch?v=JGwWNGJdvx8",
+            cover: "https://i.ytimg.com/vi/JGwWNGJdvx8/hqdefault.jpg"
         }
     ],
-    "te": [
+    "calm": [
         {
-            name: "Butta Bomma",
-            artist: "Armaan Malik",
-            url: "https://www.youtube.com/watch?v=MbqF2a5lRI0",
-            cover: "https://i.ytimg.com/vi/MbqF2a5lRI0/hqdefault.jpg",
-            language: "Telugu",
-            timePeriod: "2020s"
+            name: "Weightless",
+            artist: "Marconi Union",
+            url: "https://www.youtube.com/watch?v=UfcAVejslrU",
+            cover: "https://i.ytimg.com/vi/UfcAVejslrU/hqdefault.jpg"
         },
         {
-            name: "Vachadayyo Saami",
-            artist: "Anirudh Ravichander",
-            url: "https://www.youtube.com/watch?v=Tx_oHgH7g0s",
-            cover: "https://i.ytimg.com/vi/Tx_oHgH7g0s/hqdefault.jpg",
-            language: "Telugu",
-            timePeriod: "2010s"
+            name: "Sunset Lover",
+            artist: "Petit Biscuit",
+            url: "https://www.youtube.com/watch?v=4sXpqLzmi9s",
+            cover: "https://i.ytimg.com/vi/4sXpqLzmi9s/hqdefault.jpg"
         }
     ]
 };
 
+// Language dictionary
+const translations = {
+    "en": {
+        "title": "Personalized Music Recommendation",
+        "inputLabel": "Enter your music preference (e.g., Rock, Calm, Dance):",
+        "recommendButton": "Get Recommendation",
+        "recommendationsTitle": "Recommended Songs:",
+        "noMatch": "No recommendations found. Try another genre like 'rock', 'pop', or 'calm'."
+    },
+    "es": {
+        "title": "Recomendación de Música Personalizada",
+        "inputLabel": "Introduce tu preferencia musical (por ejemplo, Rock, Calm, Dance):",
+        "recommendButton": "Obtener Recomendación",
+        "recommendationsTitle": "Canciones Recomendadas:",
+        "noMatch": "No se encontraron recomendaciones. Prueba otro género como 'rock', 'pop' o 'calm'."
+    },
+    "fr": {
+        "title": "Recommandation de Musique Personnalisée",
+        "inputLabel": "Entrez votre préférence musicale (par exemple, Rock, Calm, Dance):",
+        "recommendButton": "Obtenir la Recommandation",
+        "recommendationsTitle": "Chansons Recommandées:",
+        "noMatch": "Aucune recommandation trouvée. Essayez un autre genre comme 'rock', 'pop' ou 'calm'."
+    }
+};
+
 // Change language based on user selection
 function changeLanguage() {
-    const selectedLanguage = document.getElementById("language").value;
-    displaySongs(selectedLanguage);
+    const lang = document.getElementById("language").value;
+    document.getElementById("title").innerText = translations[lang].title;
+    document.getElementById("inputLabel").innerText = translations[lang].inputLabel;
+    document.getElementById("recommendButton").innerText = translations[lang].recommendButton;
+    document.getElementById("recommendationsTitle").innerText = translations[lang].recommendationsTitle;
 }
 
-// Display songs based on the selected language
-function displaySongs(language) {
+// Function to get recommendations based on user input
+function getRecommendation() {
+    const userInput = document.getElementById("musicPreference").value.toLowerCase();
     const songList = document.getElementById("songList");
-    songList.innerHTML = ''; // Clear the previous list
 
-    const songs = songsData[language];
-    if (songs) {
-        songs.forEach(song => {
+    // Clear previous recommendations
+    songList.innerHTML = '';
+
+    // Find the genre based on user input
+    let matchedSongs = songsData[userInput] || [];
+
+    // Show recommendations
+    if (matchedSongs.length > 0) {
+        matchedSongs.forEach(song => {
             const listItem = document.createElement("li");
             listItem.innerHTML = `
                 <img src="${song.cover}" alt="${song.name}" width="50" height="50">
-                <a href="${song.url}" target="_blank">${song.name} by ${song.artist} (${song.timePeriod})</a>
+                <a href="${song.url}" target="_blank">${song.name} by ${song.artist}</a>
             `;
             songList.appendChild(listItem);
         });
     } else {
         const noResultItem = document.createElement("li");
-        noResultItem.textContent = "No songs available for this language.";
+        noResultItem.textContent = translations[document.getElementById("language").value].noMatch;
         songList.appendChild(noResultItem);
     }
 }
 
-// Initialize with default language as English
-displaySongs("en");
+// Initial language setup
+changeLanguage();
