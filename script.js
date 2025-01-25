@@ -1,209 +1,113 @@
-// API Controller
-const APIController = (function() {
-    const clientId = 'PASTE YOUR CLIENT ID HERE';
-    const clientSecret = 'PASTE YOUR CLIENT SECRET HERE';
+// 1. Install the dotenv package
+// npm install dotenv
 
-    // private methods
-    const _getToken = async () => {
-        const result = await fetch('https://accounts.spotify.com/api/token', {
+// 2. Import dotenv to load environment variables
+require('dotenv').config();
+
+// 3. Fetching libraries for HTTP requests
+const fetch = require('node-fetch');
+
+// 4. Retrieve Client ID and Client Secret from environment variables
+const clientId = process.env.SPOTIFY_CLIENT_ID;
+const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
+
+// 5. Function to get Spotify Access Token
+async function getSpotifyAccessToken() {
+    try {
+        const response = await fetch('https://accounts.spotify.com/api/token', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': 'Basic ' + btoa(clientId + ':' + clientSecret),
+                'Authorization': 'Basic ' + Buffer.from(clientId + ':' + clientSecret).toString('base64'),
             },
-            body: 'grant_type=client_credentials',
+            body: 'grant_type=client_credentials'
         });
 
-        const data = await result.json();
+        const data = await response.json();
+        if (data.error) {
+            throw new Error(data.error_description);
+        }
         return data.access_token;
-    };
+    } catch (error) {
+        console.error('Error fetching access token:', error);
+    }
+}
 
-    const _getGenres = async (token) => {
-        const result = await fetch('https://api.spotify.com/v1/browse/categories?locale=en_US', {
+// 6. Function to get genres from Spotify API
+async function getGenres(token) {
+    try {
+        const response = await fetch('https://api.spotify.com/v1/browse/categories', {
             method: 'GET',
-            headers: { 'Authorization': 'Bearer ' + token },
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        });
+        
+        const data = await response.json();
+        if (data.error) {
+            throw new Error(data.error.message);
+        }
+        return data.categories.items; // Return the list of genres
+    } catch (error) {
+        console.error('Error fetching genres:', error);
+    }
+}
+
+// 7. Function to get playlists by genre from Spotify API
+async function getPlaylistsByGenre(token, genreId) {
+    try {
+        const response = await fetch(`https://api.spotify.com/v1/browse/categories/${genreId}/playlists`, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
         });
 
-        const data = await result.json();
-        return data.categories.items;
-    };
+        const data = await response.json();
+        if (data.error) {
+            throw new Error(data.error.message);
+        }
+        return data.playlists.items; // Return the list of playlists
+    } catch (error) {
+        console.error('Error fetching playlists by genre:', error);
+    }
+}
 
-    const _getPlaylistByGenre = async (token, genreId) => {
-        const limit = 10;
+// 8. Main Function to Initialize App
+async function initialize() {
+    try {
+        const token = await getSpotifyAccessToken(); // Get access token
+        if (!token) {
+            console.error('Failed to get Spotify access token');
+            return;
+        }
 
-        const result = await fetch(`https://api.spotify.com/v1/browse/categories/${genreId}/playlists?limit=${limit}`, {
-            method: 'GET',
-            headers: { 'Authorization': 'Bearer ' + token },
+        const genres = await getGenres(token); // Get genres
+        if (!genres || genres.length === 0) {
+            console.error('No genres found');
+            return;
+        }
+
+        console.log('Available Genres:');
+        genres.forEach(genre => {
+            console.log(`${genre.name} (${genre.id})`); // Display genres
         });
 
-        const data = await result.json();
-        return data.playlists.items;
-    };
+        // Example: Get playlists for a specific genre (e.g., "pop")
+        const genreId = 'pop'; // Change this to any genre ID from the list
+        const playlists = await getPlaylistsByGenre(token, genreId);
+        if (playlists && playlists.length > 0) {
+            console.log(`Playlists for Genre '${genreId}':`);
+            playlists.forEach(playlist => {
+                console.log(`${playlist.name} (${playlist.tracks.total} tracks)`); // Display playlists
+            });
+        } else {
+            console.error('No playlists found for this genre');
+        }
+    } catch (error) {
+        console.error('Error during initialization:', error);
+    }
+}
 
-    const _getTracks = async (token, tracksEndPoint) => {
-        const limit = 10;
-
-        const result = await fetch(`${tracksEndPoint}?limit=${limit}`, {
-            method: 'GET',
-            headers: { 'Authorization': 'Bearer ' + token },
-        });
-
-        const data = await result.json();
-        return data.items;
-    };
-
-    const _getTrack = async (token, trackEndPoint) => {
-        const result = await fetch(`${trackEndPoint}`, {
-            method: 'GET',
-            headers: { 'Authorization': 'Bearer ' + token },
-        });
-
-        const data = await result.json();
-        return data;
-    };
-
-    return {
-        getToken() {
-            return _getToken();
-        },
-        getGenres(token) {
-            return _getGenres(token);
-        },
-        getPlaylistByGenre(token, genreId) {
-            return _getPlaylistByGenre(token, genreId);
-        },
-        getTracks(token, tracksEndPoint) {
-            return _getTracks(token, tracksEndPoint);
-        },
-        getTrack(token, trackEndPoint) {
-            return _getTrack(token, trackEndPoint);
-        },
-    };
-})();
-
-// UI Controller
-const UIController = (function() {
-    const DOMElements = {
-        selectGenre: '#select_genre',
-        selectPlaylist: '#select_playlist',
-        buttonSubmit: '#btn_submit',
-        divSongDetail: '#song-detail',
-        hfToken: '#hidden_token',
-        divSonglist: '.song-list',
-    };
-
-    return {
-        inputField() {
-            return {
-                genre: document.querySelector(DOMElements.selectGenre),
-                playlist: document.querySelector(DOMElements.selectPlaylist),
-                tracks: document.querySelector(DOMElements.divSonglist),
-                submit: document.querySelector(DOMElements.buttonSubmit),
-                songDetail: document.querySelector(DOMElements.divSongDetail),
-            };
-        },
-
-        createGenre(text, value) {
-            const html = `<option value="${value}">${text}</option>`;
-            document.querySelector(DOMElements.selectGenre).insertAdjacentHTML('beforeend', html);
-        },
-
-        createPlaylist(text, value) {
-            const html = `<option value="${value}">${text}</option>`;
-            document.querySelector(DOMElements.selectPlaylist).insertAdjacentHTML('beforeend', html);
-        },
-
-        createTrack(id, name) {
-            const html = `<a href="#" class="list-group-item list-group-item-action list-group-item-light" id="${id}">${name}</a>`;
-            document.querySelector(DOMElements.divSonglist).insertAdjacentHTML('beforeend', html);
-        },
-
-        createTrackDetail(img, title, artist) {
-            const detailDiv = document.querySelector(DOMElements.divSongDetail);
-            detailDiv.innerHTML = '';
-
-            const html = `
-                <div class="row col-sm-12 px-0">
-                    <img src="${img}" alt="">
-                </div>
-                <div class="row col-sm-12 px-0">
-                    <label for="Genre" class="form-label col-sm-12">${title}:</label>
-                </div>
-                <div class="row col-sm-12 px-0">
-                    <label for="artist" class="form-label col-sm-12">By ${artist}:</label>
-                </div>
-            `;
-            detailDiv.insertAdjacentHTML('beforeend', html);
-        },
-
-        resetTrackDetail() {
-            this.inputField().songDetail.innerHTML = '';
-        },
-
-        resetTracks() {
-            this.inputField().tracks.innerHTML = '';
-            this.resetTrackDetail();
-        },
-
-        resetPlaylist() {
-            this.inputField().playlist.innerHTML = '';
-            this.resetTracks();
-        },
-
-        storeToken(value) {
-            document.querySelector(DOMElements.hfToken).value = value;
-        },
-
-        getStoredToken() {
-            return { token: document.querySelector(DOMElements.hfToken).value };
-        },
-    };
-})();
-
-// APP Controller
-const APPController = (function(UICtrl, APICtrl) {
-    const DOMInputs = UICtrl.inputField();
-
-    const loadGenres = async () => {
-        const token = await APICtrl.getToken();
-        UICtrl.storeToken(token);
-        const genres = await APICtrl.getGenres(token);
-        genres.forEach(element => UICtrl.createGenre(element.name, element.id));
-    };
-
-    DOMInputs.genre.addEventListener('change', async () => {
-        UICtrl.resetPlaylist();
-        const token = UICtrl.getStoredToken().token;
-        const genreId = DOMInputs.genre.options[DOMInputs.genre.selectedIndex].value;
-        const playlist = await APICtrl.getPlaylistByGenre(token, genreId);
-        playlist.forEach(p => UICtrl.createPlaylist(p.name, p.tracks.href));
-    });
-
-    DOMInputs.submit.addEventListener('click', async (e) => {
-        e.preventDefault();
-        UICtrl.resetTracks();
-        const token = UICtrl.getStoredToken().token;
-        const playlistSelect = DOMInputs.playlist;
-        const tracksEndPoint = playlistSelect.options[playlistSelect.selectedIndex].value;
-        const tracks = await APICtrl.getTracks(token, tracksEndPoint);
-        tracks.forEach(el => UICtrl.createTrack(el.track.href, el.track.name));
-    });
-
-    DOMInputs.tracks.addEventListener('click', async (e) => {
-        e.preventDefault();
-        UICtrl.resetTrackDetail();
-        const token = UICtrl.getStoredToken().token;
-        const trackEndpoint = e.target.id;
-        const track = await APICtrl.getTrack(token, trackEndpoint);
-        UICtrl.createTrackDetail(track.album.images[2].url, track.name, track.artists[0].name);
-    });
-
-    return {
-        init() {
-            loadGenres();
-        },
-    };
-})(UIController, APIController);
-
-// Initialize App
-APPController.init();
+// 9. Call the initialization function
+initialize();
