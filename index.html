@@ -1,28 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Personalized Music Player</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify Music Explorer</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="music-player">
-    <h1>AI Personalized Music Player</h1>
-    <label for="mood">Choose your mood:</label>
-    <select id="mood">
-      <option value="happy">Happy</option>
-      <option value="sad">Sad</option>
-      <option value="relaxed">Relaxed</option>
-      <option value="energetic">Energetic</option>
-    </select>
-    <button onclick="suggestSong()">Get Song Suggestion</button>
-    <div id="suggestion">
-      <h2>Suggested Song:</h2>
-      <p id="song-name">Select a mood to get started!</p>
-      <audio id="audio" controls></audio>
+    <div class="container">
+        <h1>Spotify Music Explorer</h1>
+
+        <!-- Genre Selection -->
+        <label for="select_genre">Select Genre</label>
+        <select id="select_genre">
+            <option value="">Select Genre</option>
+        </select>
+
+        <!-- Playlist Selection -->
+        <label for="select_playlist">Select Playlist</label>
+        <select id="select_playlist">
+            <option value="">Select Playlist</option>
+        </select>
+
+        <!-- Submit Button -->
+        <button id="btn_submit">Get Tracks</button>
+
+        <!-- Song List -->
+        <h2>Song List</h2>
+        <div class="song-list"></div>
+
+        <!-- Song Detail -->
+        <h2>Song Detail</h2>
+        <div id="song-detail"></div>
+
+        <!-- Hidden Token Storage -->
+        <input type="hidden" id="hidden_token">
     </div>
-  </div>
-  <script src="script.js"></script>
+
+    <script src="script.js"></script>
 </body>
 </html>
