@@ -1,38 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personalized Music Recommendation</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multilingual Music Player</title>
 </head>
 <body>
-    <div class="container">
-        <h1 id="title">Personalized Music Recommendation</h1>
+  <h1>Multilingual Music Player</h1>
+  <button onclick="fetchSongs('hindi')">Hindi Songs</button>
+  <button onclick="fetchSongs('english')">English Songs</button>
+  <button onclick="fetchSongs('telugu')">Telugu Songs</button>
+  <div id="songs"></div>
 
-        <div class="language-selection">
-            <label for="language">Choose Language:</label>
-            <select id="language" onchange="changeLanguage()">
-                <option value="en">English</option>
-                <option value="es">Español</option>
-                <option value="fr">Français</option>
-            </select>
-        </div>
+  <script>
+    async function fetchSongs(language) {
+      const apiKey = '25f71e614cmshfc344bdd343b45ep1e8e15jsn9fe1895a8e17';
+      const url = `https://example-music-api.com/songs?language=${language}`;
 
-        <div class="input-section">
-            <label for="musicPreference" id="inputLabel">Enter your music preference (e.g., Rock, Calm, Dance):</label>
-            <input type="text" id="musicPreference" placeholder="Enter your preferences...">
-            <button onclick="getRecommendation()" id="recommendButton">Get Recommendation</button>
-        </div>
+      try {
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-API-Key': apiKey
+          }
+        });
 
-        <div class="recommendations">
-            <h2 id="recommendationsTitle">Recommended Songs:</h2>
-            <ul id="songList">
-                <!-- Recommendations will be listed here -->
-            </ul>
-        </div>
-    </div>
+        if (!response.ok) {
+          throw new Error('Failed to fetch songs');
+        }
 
-    <script src="app.js"></script>
+        const data = await response.json();
+        displaySongs(data);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    function displaySongs(songs) {
+      const container = document.getElementById('songs');
+      container.innerHTML = '';
+      songs.forEach(song => {
+        const div = document.createElement('div');
+        div.innerHTML = `<h3>${song.name}</h3><p>Artist: ${song.artist}</p>`;
+        container.appendChild(div);
+      });
+    }
+  </script>
 </body>
 </html>
