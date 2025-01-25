@@ -3,26 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Regional Music Player</title>
+    <title>Personalized Music Recommendation</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1 id="title">Regional Music Player</h1>
+        <h1 id="title">Personalized Music Recommendation</h1>
 
         <div class="language-selection">
-            <label for="language">Select Language:</label>
+            <label for="language">Choose Language:</label>
             <select id="language" onchange="changeLanguage()">
                 <option value="en">English</option>
-                <option value="hi">हिंदी</option>
-                <option value="te">తెలుగు</option>
+                <option value="es">Español</option>
+                <option value="fr">Français</option>
             </select>
+        </div>
+
+        <div class="input-section">
+            <label for="musicPreference" id="inputLabel">Enter your music preference (e.g., Rock, Calm, Dance):</label>
+            <input type="text" id="musicPreference" placeholder="Enter your preferences...">
+            <button onclick="getRecommendation()" id="recommendButton">Get Recommendation</button>
         </div>
 
         <div class="recommendations">
             <h2 id="recommendationsTitle">Recommended Songs:</h2>
             <ul id="songList">
-                <!-- Recommendations will be dynamically listed here -->
+                <!-- Recommendations will be listed here -->
             </ul>
         </div>
     </div>
