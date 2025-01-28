@@ -1,33 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Predict Mood from Webcam</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-
   <div class="container">
+    <h1>Predict Your Mood from Webcam</h1>
+    <p>Allow access to your webcam, and we'll detect your mood in real-time!</p>
 
-    <h1>AI Personalized Music Generator</h1>
-
-    <p>Select your mood, and let AI create your music!</p>
-
-    <div id="moodSelector">
-
-      <select id="moodDropdown"></select>
-
-      <button id="generateBtn">Generate Music</button>
-
+    <div class="webcam-container">
+      <video id="webcam" autoplay playsinline muted></video>
+      <canvas id="canvas"></canvas>
     </div>
 
     <div id="result">
-
-      <h2>Your Generated Music:</h2>
-
-      <audio id="player" controls style="display: none;"></audio>
-
+      <h2>Your Mood: <span id="mood">Detecting...</span></h2>
     </div>
-
   </div>
-
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
   <script src="script.js"></script>
-
 </body>
-
 </html>
