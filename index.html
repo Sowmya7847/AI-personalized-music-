@@ -3,49 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Multilingual Music Player</title>
+  <title>Dynamic AI Music Generator</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Multilingual Music Player</h1>
-  <button onclick="fetchSongs('hindi')">Hindi Songs</button>
-  <button onclick="fetchSongs('english')">English Songs</button>
-  <button onclick="fetchSongs('telugu')">Telugu Songs</button>
-  <div id="songs"></div>
-
-  <script>
-    async function fetchSongs(language) {
-      const apiKey = '25f71e614cmshfc344bdd343b45ep1e8e15jsn9fe1895a8e17';
-      const url = `https://example-music-api.com/songs?language=${language}`;
-
-      try {
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-API-Key': apiKey
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch songs');
-        }
-
-        const data = await response.json();
-        displaySongs(data);
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    }
-
-    function displaySongs(songs) {
-      const container = document.getElementById('songs');
-      container.innerHTML = '';
-      songs.forEach(song => {
-        const div = document.createElement('div');
-        div.innerHTML = `<h3>${song.name}</h3><p>Artist: ${song.artist}</p>`;
-        container.appendChild(div);
-      });
-    }
-  </script>
+  <div class="container">
+    <h1>AI Personalized Music Generator</h1>
+    <p>Select your mood, and let AI create your music!</p>
+    <div id="moodSelector">
+      <select id="moodDropdown"></select>
+      <button id="generateBtn">Generate Music</button>
+    </div>
+    <div id="result">
+      <h2>Your Generated Music:</h2>
+      <audio id="player" controls style="display: none;"></audio>
+    </div>
+  </div>
+  <script src="script.js"></script>
 </body>
 </html>
